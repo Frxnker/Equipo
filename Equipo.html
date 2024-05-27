@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>División de Equipos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .teams {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .team {
+            width: 45%;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e0e0e0;
+        }
+
+        #team1 {
+            background-color: #d1f7d1;
+        }
+
+        #team2 {
+            background-color: #d1d1f7;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 5px;
+        }
+
+        .shirt {
+            margin-top: 10px;
+            width: 100px;
+            height: auto;
+        }
+
+        #players-list {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        #player-selection {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #player-selection li {
+            width: 45%;
+            margin: 5px 2.5%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+
+        .level-input, .position-select {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>División de Equipos</h1>
+        <div id="players-list">
+            <h2>Selecciona los jugadores</h2>
+            <button onclick="seleccionarTodos(true)">Seleccionar Todos</button>
+            <button onclick="seleccionarTodos(false)">Desmarcar Todos</button>
+            <ul id="player-selection">
+            </ul>
+        </div>
+        <div>
+            <h2>Selecciona las camisetas</h2>
+            <label for="team1-shirt">Equipo 1:</label>
+            <select id="team1-shirt" onchange="actualizarCamiseta('team1-img', this.value)">
+                <option value="https://copyplan.es/wp-content/uploads/2018/06/negro-front.png">Camiseta Negra</option>
+                <option value="https://copyplan.es/wp-content/uploads/2018/06/blanco-front.png">Camiseta Blanca</option>
+            </select>
+            <label for="team2-shirt">Equipo 2:</label>
+            <select id="team2-shirt" onchange="actualizarCamiseta('team2-img', this.value)">
+                <option value="https://copyplan.es/wp-content/uploads/2018/06/blanco-front.png">Camiseta Blanca</option>
+                <option value="https://copyplan.es/wp-content/uploads/2018/06/negro-front.png">Camiseta Negra</option>
+            </select>
+        </div>
+        <br>
+        <button onclick="dividirEquipos()">Dividir Equipos</button>
+        <div class="teams">
+            <div class="team" id="team1">
+                <h2>Equipo 1</h2>
+                <ul id="list1"></ul>
+                <p id="level1">Nivel total: </p>
+                <img id="team1-img" src="https://copyplan.es/wp-content/uploads/2018/06/negro-front.png" alt="Camiseta negra" class="shirt">
+            </div>
+            <div class="team" id="team2">
+                <h2>Equipo 2</h2>
+                <ul id="list2"></ul>
+                <p id="level2">Nivel total: </p>
+                <img id="team2-img" src="https://copyplan.es/wp-content/uploads/2018/06/blanco-front.png" alt="Camiseta blanca" class="shirt">
+            </div>
+        </div>
+    </div>
+    <script>
+        class Jugador {
+            constructor(nombre, nivel) {
+                this.nombre = nombre;
+                this.nivel = nivel;
+            }
+        }
+
+        const jugadores = [
+            new Jugador("Pepe", null),
+            new Jugador("Jesús", null),
+            new Jugador("Javi", null),
+            new Jugador("Juanan", null),
+            new Jugador("Andrés", null),
+            new Jugador("Dani", null),
+            new Jugador("Joserelillo", null),
+            new Jugador("Fabián", null),
+            new Jugador("David", null),
+            new Jugador("Frank", null),
+            new Jugador("Santiago", null),
+            new Jugador("Victor", null),
+            new Jugador("Fran", null),
+            new Jugador("Fridon", null),
+            new Jugador("Herrero", null),
+            new Jugador("Pompeyo", null),
+        ];
+
+        window.onload = function() {
+            const playerSelection = document.getElementById("player-selection");
+            jugadores.forEach((jugador, index) => {
+                const li = document.createElement("li");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = `player-${index}`;
+                checkbox.value = index;
+
+                const label = document.createElement("label");
+                label.htmlFor = `player-${index}`;
+                label.textContent = jugador.nombre;
+
+                const input = document.createElement("input");
+                input.type = "number";
+                input.className = "level-input";
+                input.min = "1";
+                input.max = "10";
+                input.step = "0.5";
+                input.id = `level-${index}`;
+
+                const select = document.createElement("select");
+                select.className = "position-select";
+                select.id = `position-${index}`;
+                const positions = ["DEL", "MC", "DEF", "POR"];
+                positions.forEach(pos => {
+                    const option = document.createElement("option");
+                    option.value = pos;
+                    option.textContent = pos;
+                    select.appendChild(option);
+                });
+
+                const positionLabel = document.createElement("label");
+                positionLabel.textContent = "‎ Posición:";
+                positionLabel.setAttribute("for", `position-${index}`);
+
+                li.appendChild(checkbox);
+                li.appendChild(label);
+                li.appendChild(input); // Movido el input antes del menú desplegable de posición
+                li.appendChild(document.createElement('span')); // Añade un espacio en blanco con un elemento span
+                li.appendChild(positionLabel); // Ahora se agrega la etiqueta "Posición:" después del espacio en blanco
+                li.appendChild(select); // Agregado el menú desplegable de posición después de la etiqueta "Posición:"
+                playerSelection.appendChild(li);
+
+            });
+        };
+
+        function seleccionarTodos(seleccionar) {
+            document.querySelectorAll('#player-selection input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = seleccionar;
+            });
+        }
+
+        function actualizarCamiseta(imgId, src) {
+            document.getElementById(imgId).src = src;
+        }
+
+        function dividirEquipos() {
+            const jugadoresSeleccionados = [];
+            const checkboxes = document.querySelectorAll('#player-selection input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                const index = checkbox.value;
+                const nivelInput = document.getElementById(`level-${index}`);
+                const nivel = nivelInput.value ? parseFloat(nivelInput.value) : 1;
+                jugadoresSeleccionados.push(new Jugador(jugadores[index].nombre, nivel));
+            });
+
+            if (jugadoresSeleccionados.length % 2 !== 0) {
+                alert("Por favor, selecciona una cantidad par de jugadores para dividir en equipos.");
+                return;
+            }
+
+            mezclarArreglo(jugadoresSeleccionados);
+
+            const { equipo1, nivelEquipo1, equipo2, nivelEquipo2 } = dividirJugadores(jugadoresSeleccionados);
+
+            mostrarEquipos(equipo1, nivelEquipo1, equipo2, nivelEquipo2);
+        }
+
+        function mezclarArreglo(arreglo) {
+            for (let i = arreglo.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arreglo[i], arreglo[j]] = [arreglo[j], arreglo[i]];
+            }
+        }
+
+        function dividirJugadores(jugadoresSeleccionados) {
+            const equipo1 = [];
+            const equipo2 = [];
+            let nivelEquipo1 = 0;
+            let nivelEquipo2 = 0;
+
+            for (let jugador of jugadoresSeleccionados) {
+                if (nivelEquipo1 <= nivelEquipo2) {
+                    equipo1.push(jugador);
+                    nivelEquipo1 += jugador.nivel;
+                } else {
+                    equipo2.push(jugador);
+                    nivelEquipo2 += jugador.nivel;
+                }
+            }
+
+            return { equipo1, nivelEquipo1, equipo2, nivelEquipo2 };
+        }
+
+        function mostrarEquipos(equipo1, nivelEquipo1, equipo2, nivelEquipo2) {
+            const list1 = document.getElementById("list1");
+            const list2 = document.getElementById("list2");
+            const level1 = document.getElementById("level1");
+            const level2 = document.getElementById("level2");
+
+            list1.innerHTML = '';
+            list2.innerHTML = '';
+
+            equipo1.forEach(jugador => {
+                const li = document.createElement("li");
+                li.textContent = `${jugador.nombre} (${jugador.nivel})`;
+                list1.appendChild(li);
+            });
+
+            equipo2.forEach(jugador => {
+                const li = document.createElement("li");
+                li.textContent = `${jugador.nombre} (${jugador.nivel})`;
+                list2.appendChild(li);
+            });
+
+            level1.textContent = `Nivel total: ${nivelEquipo1}`;
+            level2.textContent = `Nivel total: ${nivelEquipo2}`;
+        }
+    </script>
+</body>
+</html>
