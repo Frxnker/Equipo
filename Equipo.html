@@ -79,6 +79,7 @@
             padding: 0;
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-around;
         }
 
         #player-selection li {
@@ -91,6 +92,12 @@
 
         .level-input, .position-select {
             margin-left: 10px;
+        }
+
+        @media screen and (max-width: 600px) {
+            #player-selection li {
+                width: 90%;
+            }
         }
     </style>
 </head>
@@ -111,6 +118,7 @@
                 <option value="https://copyplan.es/wp-content/uploads/2018/06/negro-front.png">Camiseta Negra</option>
                 <option value="https://copyplan.es/wp-content/uploads/2018/06/blanco-front.png">Camiseta Blanca</option>
             </select>
+            <br>
             <label for="team2-shirt">Equipo 2:</label>
             <select id="team2-shirt" onchange="actualizarCamiseta('team2-img', this.value)">
                 <option value="https://copyplan.es/wp-content/uploads/2018/06/blanco-front.png">Camiseta Blanca</option>
@@ -186,6 +194,7 @@
                 select.className = "position-select";
                 select.id = `position-${index}`;
                 const positions = ["DEL", "MC", "DEF", "POR"];
+
                 positions.forEach(pos => {
                     const option = document.createElement("option");
                     option.value = pos;
@@ -199,12 +208,11 @@
 
                 li.appendChild(checkbox);
                 li.appendChild(label);
-                li.appendChild(input); // Movido el input antes del menú desplegable de posición
-                li.appendChild(document.createElement('span')); // Añade un espacio en blanco con un elemento span
-                li.appendChild(positionLabel); // Ahora se agrega la etiqueta "Posición:" después del espacio en blanco
-                li.appendChild(select); // Agregado el menú desplegable de posición después de la etiqueta "Posición:"
+                li.appendChild(input); 
+                li.appendChild(document.createElement('span')); 
+                li.appendChild(positionLabel); 
+                li.appendChild(select); 
                 playerSelection.appendChild(li);
-
             });
         };
 
